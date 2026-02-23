@@ -9,3 +9,5 @@ These scripts were really for my own use but if anyone else finds some use for t
 
 Cheers - Rhonda Dyane Brûçé 
 http://rhondadyane.ddns.net
+
+PS. if your command line does not use a monospace font (all chars and spaces take up the same width on screen) then the glyphs will come out cattywampas ... best then to just use the longcount script and not the longglyph!!
