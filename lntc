@@ -1,0 +1,31 @@
+#!/bin/bash
+
+ToDay=$1
+
+
+LN=$((( ToDay % 9 ) +1 ))
+TG=$((( ToDay % 7 ) +1 ))
+CG=$((( ToDay % 13) +1 ))
+Odd=$((( ToDay % 2) +1 ))
+
+echo "Lords of the:"
+echo "Night G"$LN" Earth Y"$TG" Sky T"$CG
+
+if [ $TG -eq 7 ] && [ $LN -eq 6 ] && [ $CG -eq 1 ]; then cat .col/Red ; echo "Lord Cycle Starts Again!" ; fi
+if [ $TG -eq 3 ] && [ $LN -eq 3 ] && [ $CG -eq 6 ]; then cat .col/yellow ; echo "819 cycle in new Abode! Does it feel like home yet?" ; fi
+# if [ $TG -eq 1 ] && [ $CG -eq 1 ]; then cat .col/green ; echo "Time to backup the Brandmeister Pi!!" ; fi
+# if [ $TG -eq 1 ] && [ $CG -eq 2 ]; then cat .col/green ; echo "Time to backup the VK-DMR Pi!!" ; fi
+# if [ $TG -eq 1 ] && [ $CG -eq 6 ]; then cat .col/green ; echo "Time to backup the TGIF Pi!!" ; fi
+# if [ $TG -eq 1 ] && [ $CG -eq 3 ]; then cat .col/purple ; echo "Time to backup the Purple Realm Pi!!" ; fi
+# if [ $TG -eq 1 ] && [ $CG -eq 4 ]; then cat .col/lavendar ; echo "Time to backup the BookWorm TestBook Server!!" ; fi
+# if [ $TG -eq 1 ] && [ $CG -eq 5 ]; then cat .col/cyan ; echo "Backup the Testbed Server regardless of uptime!!" ; fi
+
+# if [ $TG -eq 1 ] && [ $Odd -eq 1 ]; then cat .col/red ; echo "Refill your pill caddy!" ; fi
+if [ $CG -eq 8 ]; then cat .col/blue ; echo "Auspicious Day!" ; fi
+# if [ $LN -eq 6 ]; then cat .col/cyan ; echo "Do backup image of TestBook Server if uptime over 2 weeks!" ; uptime -p ; fi
+
+# Added from Life Experience !!
+if [ $TG -eq 3 ] && [ $LN -eq 7 ] && [ $CG -eq 4 ]; then cat .col/Red ; echo "Full cycle since day of accidents, where you aware, did they happen?" ; fi
+
+
+cat .col/reset

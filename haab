@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Script to get HAAB from number of days since
+# commencement of long count
+
+DayCount=$1
+
+YearDay=$((DayCount % 365))
+
+# echo $YearDay
+
+MnthName=("Wayeb" "Pohp" "Wo" "Sip" "Sots" "Sek" "Xul" "Yaxk'in" "Mol" "Ch'en" "Yax" "Sak" "Keh" "Mak" "K'ank'in" "Muwan" "Pax" "K'ayab" "K'umk'u" "Wayeb")
+
+YearDay=$((YearDay - 1))
+
+if [ $YearDay -gt 360 ]; then
+    Mnth=19
+    MnthDay=$((YearDay - 360))
+    cat .col/lavendar
+else
+    Mnth=$(((YearDay / 20) + 1))
+    MnthDay=$((YearDay % 20))
+fi
+if [ $MnthDay == -1 ]; then Mnth=19; MnthDay=4; cat .col/grey ; fi
+if [ $MnthDay == 0 ]; then cat .col/blue ; fi
+
+ThisMnth="${MnthName[Mnth]}"
+
+echo "Haab = "$MnthDay" "$ThisMnth
+
+# 	Added from life experience!!
+    if [ $Mnth == 19 ]; then echo "Evil will show it's face at this time." ; fi
+    if [ $Mnth -eq 2 ] && [ $MnthDay -eq 10 ]; then echo "Day of minor accidents, be aware!" ; fi
+
+cat .col/reset

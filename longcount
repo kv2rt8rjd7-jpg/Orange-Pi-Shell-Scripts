@@ -1,0 +1,127 @@
+#!/bin/bash
+# By: Rhonda Dyane Bruce
+
+# --- Function to render the Maya Long Count Date ---
+# ----- Created in colaberation with Gemini AI ------
+
+mlcd() {
+    local input=$(echo "$1" | tr '.' ' ')
+    local l1="" l2="" l3="" l4="" l5=""
+    local count=0
+
+    for n in $input; do
+        ((count++))
+        local r1="        " r2="        " r3="        " r4="        " r5="        "
+        
+        if [ "$n" -eq 0 ]; then
+            r1="   ╔╗   "; r2="   ╠╣   "; r3="   ╟╢   "; r4="   ╠╣   "; r5="   ╚╝   "
+        else
+            local dots=$(( n % 5 ))
+            local bars=$(( n / 5 ))
+            local b_str=""
+            for (( i=0; i<bars; i++ )); do b_str+="▌"; done
+            
+            printf -v r1 "    %-4s" "$b_str"
+            printf -v r2 "    %-4s" "$b_str"
+            printf -v r3 "    %-4s" "$b_str"
+            printf -v r4 "    %-4s" "$b_str"
+            printf -v r5 "    %-4s" "$b_str"
+
+#            [[ $dots -ge 1 ]] && r2="${r2:0:3}●${r2:4}"
+#            [[ $dots -ge 2 ]] && r3="${r3:0:3}●${r3:4}"
+#            [[ $dots -ge 3 ]] && r4="${r4:0:3}●${r4:4}"
+#            [[ $dots -ge 4 ]] && r1="${r1:0:3}●${r1:4}"
+
+# New Centred Dot Logic
+            case $dots in
+                1) r3="${r3:0:3}●${r3:4}" ;; # One dot: Dead centre
+                2) r2="${r2:0:3}●${r2:4}"    # Two dots: Balanced top/bottom
+                   r4="${r4:0:3}●${r4:4}" ;;
+                3) r2="${r2:0:3}●${r2:4}"    # Three dots: Top, Middle, Bottom
+                   r3="${r3:0:3}●${r3:4}"
+                   r4="${r4:0:3}●${r4:4}" ;;
+                4) r1="${r1:0:3}●${r1:4}"    # Four dots: Spread across all but middle
+                   r2="${r2:0:3}●${r2:4}"
+                   r4="${r4:0:3}●${r4:4}"
+                   r5="${r5:0:3}●${r5:4}" ;;
+            esac
+        fi
+        l1+="$r1"; l2+="$r2"; l3+="$r3"; l4+="$r4"; l5+="$r5"
+    done
+
+    # The Fix: We calculate the border based on the actual length of the line
+    # rather than just multiplying by 8. This accounts for character scaling.
+    local line_len=${#l1}
+    local top_bot=$(printf '═%.0s' $(seq 1 $line_len))
+
+    echo "╔$top_bot╗"
+    echo "║$l1║"
+    echo "║$l2║"
+    echo "║$l3║"
+    echo "║$l4║"
+    echo "║$l5║"
+    echo "╚$top_bot╝"
+}
+
+# --- Your original Logic ---
+inptY=$1
+inptD=$2
+
+if [ $# -ne 2 ]; then
+    year=$(date +%Y)
+    day=$(date +%-j)
+    day=$((day + inptY))
+else
+    year=$inptY
+    day=$inptD
+fi
+
+longday=$(((year * 365 + day)))
+leapday=$(((year - 1) / 4))
+notleap=$(((year - 1) / 100))
+notnot=$(((year - 1) / 400))
+leapfix=$((leapday - notleap + notnot))
+longlong=$((longday + leapfix - 365))
+
+firstday=$((longlong + 1137142))
+
+nightlord=$(((firstday %9 )))
+if [ $nightlord -eq 0 ]; then nightlord=$((9)); fi
+
+small01=$((firstday % 20))
+secondday=$((firstday / 20))
+small02=$((secondday % 18))
+thirdday=$((secondday / 18))
+small03=$((thirdday % 20))
+fourthday=$((thirdday / 20))
+small04=$((fourthday % 20))
+fifthday=$((fourthday / 20))
+small05=$((fifthday % 20))
+
+LC_STRING="$small05.$small04.$small03.$small02.$small01"
+
+echo "$LC_STRING"
+
+# Call your other scripts
+tzolkin $((firstday-23+260))
+haab $((firstday-16+365))
+lntc $((firstday-10+117*1+63*0+819*2))
+
+# Send the string to the function
+# mlcd "$nightlord"
+# echo "[8A"
+# mlcd "$LC_STRING"
+
+# 1. Capture the Night Lord box into an array
+mapfile -t nl_box < <(mlcd "$nightlord")
+
+# 2. Capture the Long Count box into an array
+mapfile -t lc_box < <(mlcd "$LC_STRING")
+
+# 3. Print them side-by-side
+# echo "" # Top margin
+# for i in "${!lc_box[@]}"; do
+#     echo " ${lc_box[$i]}  ${nl_box[$i]}"
+# done
+# echo "" # Bottom margin
+

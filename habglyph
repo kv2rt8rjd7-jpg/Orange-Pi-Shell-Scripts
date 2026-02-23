@@ -1,0 +1,125 @@
+#!/bin/bash
+
+# Script to get HAAB from number of days since
+# commencement of long count
+
+
+# --- Function to render the Maya Long Count Date ---
+# ----- Created in colaberation with Gemini AI ------
+
+mlcd() {
+    local input=$(echo "$1" | tr '.' ' ')
+    local l1="" l2="" l3="" l4="" l5=""
+    local count=0
+
+    for n in $input; do
+        ((count++))
+        local r1="        " r2="        " r3="        " r4="        " r5="        "
+        
+        if [ "$n" -eq 0 ]; then
+            r1="   ╔╗   "; r2="   ╠╣   "; r3="   ╟╢   "; r4="   ╠╣   "; r5="   ╚╝   "
+        else
+            local dots=$(( n % 5 ))
+            local bars=$(( n / 5 ))
+            local b_str=""
+            for (( i=0; i<bars; i++ )); do b_str+="▌"; done
+            
+            printf -v r1 "    %-4s" "$b_str"
+            printf -v r2 "    %-4s" "$b_str"
+            printf -v r3 "    %-4s" "$b_str"
+            printf -v r4 "    %-4s" "$b_str"
+            printf -v r5 "    %-4s" "$b_str"
+
+#            [[ $dots -ge 1 ]] && r2="${r2:0:3}●${r2:4}"
+#            [[ $dots -ge 2 ]] && r3="${r3:0:3}●${r3:4}"
+#            [[ $dots -ge 3 ]] && r4="${r4:0:3}●${r4:4}"
+#            [[ $dots -ge 4 ]] && r1="${r1:0:3}●${r1:4}"
+
+# New Centred Dot Logic
+            case $dots in
+                1) r3="${r3:0:3}●${r3:4}" ;; # One dot: Dead centre
+                2) r2="${r2:0:3}●${r2:4}"    # Two dots: Balanced top/bottom
+                   r4="${r4:0:3}●${r4:4}" ;;
+                3) r2="${r2:0:3}●${r2:4}"    # Three dots: Top, Middle, Bottom
+                   r3="${r3:0:3}●${r3:4}"
+                   r4="${r4:0:3}●${r4:4}" ;;
+                4) r1="${r1:0:3}●${r1:4}"    # Four dots: Spread across all but middle
+                   r2="${r2:0:3}●${r2:4}"
+                   r4="${r4:0:3}●${r4:4}"
+                   r5="${r5:0:3}●${r5:4}" ;;
+            esac
+        fi
+        l1+="$r1"; l2+="$r2"; l3+="$r3"; l4+="$r4"; l5+="$r5"
+    done
+
+    # The Fix: We calculate the border based on the actual length of the line
+    # rather than just multiplying by 8. This accounts for character scaling.
+    local line_len=${#l1}
+    local top_bot=$(printf '═%.0s' $(seq 1 $line_len))
+    local bot_spa=$(printf ' %.0s' $(seq 1 $line_len))
+
+    echo " $bot_spa "
+    echo "╔$top_bot╗"
+    echo "║$l1║"
+    echo "║$l2║"
+    echo "║$l3║"
+    echo "║$l4║"
+    echo "║$l5║"
+    echo "╚$top_bot╝"
+}
+
+# --- Your original Logic ---
+
+
+DayCount=$1
+
+YearDay=$((DayCount % 365))
+
+# echo $YearDay
+
+MnthName=("Way" "Pop" "Uo" "Zip" "Zot" "Zec" "Xul" "Yaxk" "Mol" "Ch" "Yax-" "Zac" "Ceh" "Mak" "Kan" "Mua" "Pax" "Kay" "Cum" "Way")
+
+YearDay=$((YearDay - 1))
+
+if [ $YearDay -gt 360 ]; then
+    Mnth=19
+    MnthDay=$((YearDay - 360))
+    cat $HOME/.col/lavendar
+else
+    Mnth=$(((YearDay / 20) + 1))
+    MnthDay=$((YearDay % 20))
+fi
+if [ $MnthDay == -1 ]; then Mnth=19; MnthDay=4; cat $HOME/.col/grey ; fi
+if [ $MnthDay == 0 ]; then cat $HOME/.col/blue ; fi
+
+ThisMnth="${MnthName[Mnth]}"
+
+# echo "Haab = "$MnthDay" "$ThisMnth
+
+
+# 1. Capture the Day Name box into an array
+mapfile -t ha_box < $HOME/Maya/Hb-$ThisMnth*
+
+# 2. Capture the Day Number box into an array
+mapfile -t hd_box < <(mlcd "$MnthDay")
+
+# 2a. Put the lonta glyph at the start
+# mapfile -t ng_box < $HOME/Maya/Lonta*
+
+# 3. Print them side-by-side
+# echo "" # Top margin
+
+echo "" > Haab-Output
+
+for i in "${!hd_box[@]}"; do
+    echo "${hd_box[$i]}  ${ha_box[$i]}" >> $HOME/Haab-Output
+done
+# echo "" # Bottom margin
+
+
+# 	Added from life experience!!
+#     if [ $Mnth == 19 ]; then echo "Evil will show it's face at this time." ; fi
+#     if [ $Mnth -eq 2 ] && [ $MnthDay -eq 10 ]; then echo "Day of minor accidents, be aware!" ; fi
+
+
+cat $HOME/.col/reset

@@ -1,0 +1,121 @@
+#!/bin/bash
+
+# Script to get Tzolkin from number of days since
+# commencement of long count
+
+
+# --- Function to render the Maya Long Count Date ---
+# ----- Created in colaberation with Gemini AI ------
+
+mlcd() {
+    local input=$(echo "$1" | tr '.' ' ')
+    local l1="" l2="" l3="" l4="" l5=""
+    local count=0
+
+    for n in $input; do
+        ((count++))
+        local r1="        " r2="        " r3="        " r4="        " r5="        "
+        
+        if [ "$n" -eq 0 ]; then
+            r1="   ╔╗   "; r2="   ╠╣   "; r3="   ╟╢   "; r4="   ╠╣   "; r5="   ╚╝   "
+        else
+            local dots=$(( n % 5 ))
+            local bars=$(( n / 5 ))
+            local b_str=""
+            for (( i=0; i<bars; i++ )); do b_str+="▌"; done
+            
+            printf -v r1 "    %-4s" "$b_str"
+            printf -v r2 "    %-4s" "$b_str"
+            printf -v r3 "    %-4s" "$b_str"
+            printf -v r4 "    %-4s" "$b_str"
+            printf -v r5 "    %-4s" "$b_str"
+
+#            [[ $dots -ge 1 ]] && r2="${r2:0:3}●${r2:4}"
+#            [[ $dots -ge 2 ]] && r3="${r3:0:3}●${r3:4}"
+#            [[ $dots -ge 3 ]] && r4="${r4:0:3}●${r4:4}"
+#            [[ $dots -ge 4 ]] && r1="${r1:0:3}●${r1:4}"
+
+# New Centred Dot Logic
+            case $dots in
+                1) r3="${r3:0:3}●${r3:4}" ;; # One dot: Dead centre
+                2) r2="${r2:0:3}●${r2:4}"    # Two dots: Balanced top/bottom
+                   r4="${r4:0:3}●${r4:4}" ;;
+                3) r2="${r2:0:3}●${r2:4}"    # Three dots: Top, Middle, Bottom
+                   r3="${r3:0:3}●${r3:4}"
+                   r4="${r4:0:3}●${r4:4}" ;;
+                4) r1="${r1:0:3}●${r1:4}"    # Four dots: Spread across all but middle
+                   r2="${r2:0:3}●${r2:4}"
+                   r4="${r4:0:3}●${r4:4}"
+                   r5="${r5:0:3}●${r5:4}" ;;
+            esac
+        fi
+        l1+="$r1"; l2+="$r2"; l3+="$r3"; l4+="$r4"; l5+="$r5"
+    done
+
+    # The Fix: We calculate the border based on the actual length of the line
+    # rather than just multiplying by 8. This accounts for character scaling.
+    local line_len=${#l1}
+    local top_bot=$(printf '═%.0s' $(seq 1 $line_len))
+    local bot_spa=$(printf ' %.0s' $(seq 1 $line_len))
+
+    echo " $bot_spa "
+    echo "╔$top_bot╗"
+    echo "║$l1║"
+    echo "║$l2║"
+    echo "║$l3║"
+    echo "║$l4║"
+    echo "║$l5║"
+    echo "╚$top_bot╝"
+}
+
+# --- Your original Logic ---
+
+
+DayCount=$1
+
+TzlDay=$((DayCount % 260))
+
+UseCol=$((DayCount % 6))
+
+MovName=("Aha" "Imix" "Ik" "Akb" "Kan" "Chi" "Cim" "Man" "Lam" "Mul" "Ok" "Chu" "Eb" "Ben" "Ix" "Men" "Cib" "Cab" "Etz" "Cau")
+
+ColName=(".col/blue" ".col/purple" ".col/red" ".col/underline" ".col/yellow" ".col/green")
+
+TzlVar=$((TzlDay + 3))
+Mov=$((TzlVar % 20))
+MovDay=$(((TzlDay % 13) +1))
+
+ThisMov="${MovName[Mov]}"
+
+PrettyCol=${ColName[UseCol]}
+
+# if [ ! -d .col ]; then
+
+#    echo "Tzolkin = "$MovDay $ThisMov "
+
+# else
+    
+    cat $HOME/$PrettyCol
+#    echo "Tzolkin = "$MovDay $ThisMov "
+
+
+# 1. Capture the Day Name box into an array
+mapfile -t nt_box < $HOME/Maya/Tz-$ThisMov*
+
+# 2. Capture the Day Number box into an array
+mapfile -t tz_box < <(mlcd "$MovDay")
+
+# 2a. Put the lonta glyph at the start
+# mapfile -t ng_box < $HOME/Maya/Lonta*
+
+# 3. Print them side-by-side
+# echo "" # Top margin
+
+echo "" > Tzol-Output
+
+for i in "${!tz_box[@]}"; do
+    echo "${tz_box[$i]}  ${nt_box[$i]}" >> $HOME/Tzol-Output
+done
+# echo "" # Bottom margin
+
+cat .col/reset

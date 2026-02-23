@@ -1,0 +1,57 @@
+#!/bin/bash
+# time-travel.sh
+
+# 1. Get the full date string (e.g., -0353-06-03)
+full_date=$(lcr "$1" | awk -F': ' '{print $2}')
+
+# 2. Extract the Year manually (handling the leading minus sign)
+# This looks at the date string and takes everything before the second-to-last hyphen
+target_year=$(echo "$full_date" | rev | cut -d'-' -f3- | rev)
+
+# 3. Sanitise the Year (strip leading zeros, keep the minus)
+target_year=$(echo "$target_year" | sed 's/^0*//; s/^-0*/-/; s/^$/0/')
+
+# 4. Extract Month and Day for a "dummy" calculation
+# This creates a date like 2000-06-03 so 'date' doesn't crash
+month_day=$(echo "$full_date" | rev | cut -d'-' -f1,2 | rev)
+day_of_year=$(date -d "2000-$month_day" +"%j")
+day_of_year=$((10#$day_of_year))
+
+
+clear
+
+echo "--- MAYA CHRONICLE RECONSTRUCTION ---"
+echo "Long Count: $1"
+echo "Gregorian:  $full_date"
+echo "Passing to glyph script: longglyph $target_year $day_of_year"
+echo "-------------------------------------"
+echo ""
+
+# 3. Call your script with the translated params
+longglyph "$target_year" "$day_of_year"
+longcount "$target_year" "$day_of_year"
+
+# 4. Show the Maya Glyph sets available if param good
+
+echo ""
+
+if [ "$2" == "a" ]; then
+     ls $HOME/Maya/Tz*
+     echo""
+     ls $HOME/Maya/Hb*
+     echo ""
+     ls $HOME/Maya/Ln*
+     echo ""
+fi
+if [ "$2" == "t" ]; then
+     ls $HOME/Maya/Tz*
+     echo""
+fi
+if [ "$2" == "h" ]; then
+     ls $HOME/Maya/Hb*
+     echo ""
+fi
+if [ "$2" == "l" ]; then
+     ls $HOME/Maya/Ln*
+     echo ""
+fi

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Script to get Tzolkin from number of days since
+# commencement of long count
+
+DayCount=$1
+
+TzlDay=$((DayCount % 260))
+
+UseCol=$((DayCount % 6))
+
+MovName=("'Ahaw" "'Imix" "'Ik'" "Ak'bal" "K'an" "Chik'chan" "Kimi" "Manik'" "Lamat" "Muluk" "Ok" "Chuwen" "'Eb" "Ben" "'Ix" "Men" "K'ib" "Kaban" "'Etz'nab" "Kawak")
+
+ColName=(".col/blue" ".col/purple" ".col/red" ".col/underline" ".col/yellow" ".col/green")
+
+TzlVar=$((TzlDay + 3))
+Mov=$((TzlVar % 20))
+MovDay=$(((TzlDay % 13) +1))
+
+ThisMov="${MovName[Mov]}"
+
+PrettyCol=${ColName[UseCol]}
+
+if [ ! -d .col ]; then
+
+    echo "Tzolkin = "$MovDay $ThisMov 
+
+else
+    
+    cat $PrettyCol
+    echo "Tzolkin = "$MovDay $ThisMov 
+
+# Days that had meaning as per MyanGlyphsBook2Sect2Apnd1
+
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 11 ]; then echo "First day of the year in the sacred Tzolkin
+Day of revelation and formation of the human being
+Special day for spiritual guides!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 12 ]; then echo "Day to celebrate life and one's good fortune!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 13 ]; then echo "Day to give thanks for one's destiny - especially in work!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 14 ]; then echo -e "Day to give thanks for the past, for the\nland one ownes either purchased or inherited.\nDay to give thanks to one's grandparents\nfor all they have left us!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 15 ]; then echo "Day to give thanks, and ask for luck in all things financial!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 7 ]; then echo "Day to commeorate the dead!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 8 ]; then echo -e "Day to give thanks for the crops and the\nfertility of the earth. This offering must\nbe given every year!" ; fi
+    if [ $MovDay -eq 12 ] && [ $Mov -eq 10 ]; then echo "Day to honor the work of the midwife!" ; fi
+    if [ $MovDay -eq 7 ] && [ $Mov -eq 15 ]; then echo -e "Day to offer ceremonies for protection,\nfor in these days a person can be harmed\nfor their bad thoughts!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 16 ]; then echo -e "Day to offer ceremonies for protection,\nfor in these days a person can be harmed\nfor their bad thoughts!" ; fi
+    if [ $MovDay -eq 9 ] && [ $Mov -eq 17 ]; then echo -e "Day to offer ceremonies for protection,\nfor in these days a person can be harmed\nfor their bad thoughts!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 17 ]; then echo -e "Day to ask for good thoughts and to be\ndelivered from bad thoughts!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 18 ]; then echo -e "This is an unfavourable day, thus a good\nday to offer ceremonies for protection!" ; fi
+    if [ $MovDay -eq 7 ] && [ $Mov -eq 0 ]; then echo -e "Day to ask for protection against\nill feelings in the family!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 1 ]; then echo -e "Day to offer ceremonies against domestic problems \nand against mental and spiritual problems!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 2 ]; then echo "Day to offer ceremonies against physical illness!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 3 ]; then echo "Day to seek protection from those that say bad things about you!" ; fi
+    if [ $MovDay -eq 13 ] && [ $Mov -eq 3 ]; then echo -e "Day to seek protection against \nnegative feelings and thoughts.\nDay to seak truth and justice!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 4 ]; then echo -e "Day to ask protection from envy, cruelty \nand those who say bad things about you!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 5 ]; then echo "Day to seek protection against illness!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 6 ]; then echo "Day to ask pardon for the bad things one has done!" ; fi
+    if [ $MovDay -eq 8 ] && [ $Mov -eq 9 ]; then echo "Day to ask protection against illness and accidents!" ; fi
+    if [ $MovDay -eq 9 ] && [ $Mov -eq 10 ]; then echo -e "Day to ask forgivness for bad thoughts \nand immoderate use of resources!" ; fi
+
+# 	The following are added from life experience!!
+    if [ $MovDay -eq 4 ] && [ $Mov -eq 7 ]; then echo "Day of minor accidents, be aware!" ; fi
+
+
+    cat .col/reset
+
+fi
